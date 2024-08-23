@@ -9,6 +9,7 @@ import OutlinedButton from "../UI/OutlinedButton";
 import { Colors } from "../../constants/colors";
 import { useState } from "react";
 import { getMapPreview } from "../../util/location";
+import { useNavigation } from "@react-navigation/native";
 
 // getCurrentPositionAsync will give us the current location of the user,
 // we will then use it inside getLocationHandler. getCurrentPositionAsync returns a Promise, so getLocationHandler must be async.
@@ -31,6 +32,7 @@ const LocationPicker = () => {
   const [pickedLocation, setPickedLocation] = useState();
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
+  const navigation = useNavigation();
 
   const verifyPermissions = async () => {
     if (
@@ -67,14 +69,16 @@ const LocationPicker = () => {
     });
   };
 
-  const pickOnMapHandler = () => {};
+  const pickOnMapHandler = () => {
+    navigation.navigate("Map");
+  };
 
   let locationPreview = <Text>No location picked yet.</Text>;
 
   if (pickedLocation) {
     locationPreview = (
       <Image
-      style={styles.image}
+        style={styles.image}
         source={{
           uri: getMapPreview(pickedLocation.lat, pickedLocation.lng),
         }}
@@ -108,6 +112,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.primary100,
     borderRadius: 4,
+    overflow: "hidden",
   },
   actions: {
     flexDirection: "row",
@@ -115,7 +120,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: '100%',
-    height: '100%'
-  }
+    width: "100%",
+    height: "100%",
+  },
 });
