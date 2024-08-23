@@ -25,7 +25,7 @@ import OutlinedButton from "../UI/OutlinedButton";
 
 // ImagePicker package better than Camera in this case because it needs little configuration
 // and allows us to open the on device photos or on the launch the camera both as possible with this package.
-const ImagePicker = () => {
+const ImagePicker = ({onTakeImage}) => {
   const [pickedImage, setPickedImage] = useState();
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
@@ -64,6 +64,7 @@ const ImagePicker = () => {
 
     const imageUri = image.assets[0].uri;
     setPickedImage(imageUri);
+    onTakeImage(imageUri)
   };
 
   let imagePreview = <Text>No image taken yet.</Text>;

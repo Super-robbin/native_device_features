@@ -7,9 +7,13 @@ import {
 
 import OutlinedButton from "../UI/OutlinedButton";
 import { Colors } from "../../constants/colors";
-import { useState } from "react";
-import { getMapPreview } from "../../util/location";
-import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import { getAddress, getMapPreview } from "../../util/location";
+import {
+  useNavigation,
+  useRoute,
+  useIsFocused,
+} from "@react-navigation/native";
 
 // getCurrentPositionAsync will give us the current location of the user,
 // we will then use it inside getLocationHandler. getCurrentPositionAsync returns a Promise, so getLocationHandler must be async.
@@ -28,11 +32,42 @@ import { useNavigation } from "@react-navigation/native";
 
 // We created a util function getMapPreview that takes lan and lng as parameter and returns URL (we pass API Key too) that renders the Google Static Map
 
-const LocationPicker = () => {
+// useIsFocused returns true if this screen is currently focused or false otherwise (in this case we use it in this component but it refers to the screen is used within).
+// It will be false when we enter the map and true when we come back from the map
+
+const LocationPicker = ({ onPickLocation }) => {
   const [pickedLocation, setPickedLocation] = useState();
+  const isFocused = useIsFocused();
+
+  const navigation = useNavigation();
+  const route = useRoute();
+
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
-  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (isFocused && route.params) {
+      const mapPickedLocation = {
+        lat: route.params.pickedLat,
+        lng: route.params.pickedLng,
+      };
+      setPickedLocation(mapPickedLocation);
+    }
+  }, [route, isFocused]);
+
+  useEffect(() => {
+    const locationHandler = async () => {
+      if (pickedLocation) {
+        const address = await getAddress(
+          pickedLocation.lat,
+          pickedLocation.lng
+        );
+        onPickLocation({ ...pickedLocation, address: address });
+      }
+    };
+
+    locationHandler();
+  }, [pickedLocation, onPickLocation]);
 
   const verifyPermissions = async () => {
     if (
