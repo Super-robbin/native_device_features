@@ -11,6 +11,7 @@ import { Colors } from "./constants/colors";
 import { useEffect, useState } from "react";
 import { init } from "./util/database";
 import * as SplashScreen from "expo-splash-screen";
+import PlaceDetails from "./screens/PlaceDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,7 +23,7 @@ SplashScreen.preventAutoHideAsync();
 
 // init() - We initialise the database as soon as the App componenent is rendered
 export default function App() {
-  const [dbInitialised, setDbInitialised] = useState(dalse);
+  const [dbInitialised, setDbInitialised] = useState(false);
 
   useEffect(() => {
     init()
@@ -75,6 +76,13 @@ export default function App() {
             }}
           />
           <Stack.Screen name="Map" component={Map} />
+          <Stack.Screen
+            name="PlaceDetails"
+            component={PlaceDetails}
+            options={{
+              title: "Loading Place...",
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </>
